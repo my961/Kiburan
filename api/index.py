@@ -26,7 +26,7 @@ def get_ai_response(user_text):
             "Content-Type": "application/json"
         }
         payload = {
-            "model": "llama-3.1-8b-instant",
+            "model": "llama3-8b-8192",
             "messages": [
                 {"role": "system", "content": "You are a helpful and smart AI assistant. Answer accurately and clearly in the language requested (Amharic or English)."},
                 {"role": "user", "content": user_text}
@@ -37,7 +37,6 @@ def get_ai_response(user_text):
         res = requests.post(url, headers=headers, json=payload, timeout=10)
         data = res.json()
         
-        # የ API መልሱን መፈተሽ
         if "choices" in data and len(data["choices"]) > 0:
             return data["choices"][0]["message"]["content"]
         else:
