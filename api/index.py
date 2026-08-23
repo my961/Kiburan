@@ -1,13 +1,11 @@
 from http.server import BaseHTTPRequestHandler
 import json
 import requests
-from groq import Groq
 
-BOT_TOKEN = 'የአዲሱ_ቦትህ_TOKEN_እዚህ_አስገባ'
-GROQ_API_KEY = 'የወሰድከው_GROQ_API_KEY_እዚህ_አስገባ'
+BOT_TOKEN = '8950917290:AAErPGnEBGxBBXaehw7Xu_VQNrF8jckMapw'
+GROQ_API_KEY = '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'
 
 TELEGRAM_API = f'https://api.telegram.org/bot{BOT_TOKEN}'
-client = Groq(api_key=GROQ_API_KEY)
 
 def send_message(chat_id, text):
     url = f"{TELEGRAM_API}/sendMessage"
@@ -23,16 +21,23 @@ def send_message(chat_id, text):
 
 def get_ai_response(user_text):
     try:
-        completion = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
-            messages=[
+        url = "https://api.groq.com/openai/v1/chat/completions"
+        headers = {
+            "Authorization": f"Bearer {GROQ_API_KEY}",
+            "Content-Type": "application/json"
+        }
+        payload = {
+            "model": "llama-3.3-70b-versatile",
+            "messages": [
                 {"role": "system", "content": "You are a helpful, smart AI assistant. Answer accurately in the language the user speaks (Amharic or English)."},
                 {"role": "user", "content": user_text}
             ],
-            temperature=0.7,
-            max_tokens=1024
-        )
-        return completion.choices[0].message.content
+            "temperature": 0.7,
+            "max_tokens": 1024
+        }
+        res = requests.post(url, headers=headers, json=payload, timeout=10)
+        data = res.json()
+        return data['choices'][0]['message']['content']
     except Exception as e:
         return "⚠️ ይቅርታ፣ መልሱን ማዘጋጀት አልተቻለም። እባክዎን ትንሽ ቆይተው ድጋሚ ይሞክሩ።"
 
@@ -50,7 +55,6 @@ class handler(BaseHTTPRequestHandler):
             if text == "/start":
                 send_message(chat_id, "🤖 **እንኳን ወደ AI ChatGPT ቦት በሰላም መጡ!**\n\nማንኛውንም ጥያቄ በፅሁፍ ይጠይቁኝ፣ ወዲያውኑ እመልስልዎታለሁ።")
             elif text:
-                # ከ AI መልስ ጠይቆ ይልካል
                 ai_reply = get_ai_response(text)
                 send_message(chat_id, ai_reply)
 
