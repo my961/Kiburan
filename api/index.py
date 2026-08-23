@@ -26,7 +26,7 @@ def get_ai_response(user_text):
             "Content-Type": "application/json"
         }
         payload = {
-            "model": "llama3-8b-8192",
+            "model": "openai/gpt-oss-20b",
             "messages": [
                 {"role": "system", "content": "You are a helpful and smart AI assistant. Answer accurately and clearly in the language requested (Amharic or English)."},
                 {"role": "user", "content": user_text}
